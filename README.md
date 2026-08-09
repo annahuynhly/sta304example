@@ -23,7 +23,8 @@ R/
 
 Shiny (>= 1.5.0) auto-sources `R/` alphabetically before `app.R` runs. This app instead loads
 those files in dependency order via the `source()` calls at the top of `app.R`, so the empty
-`R/_disable_autoload.R` sentinel switches the automatic sourcing off to avoid a conflict.
+`R/_disable_autoload.R` sentinel switches the automatic sourcing off to avoid a conflict. (See 
+bottom of [here](https://shiny.posit.co/r/reference/shiny/latest/loadsupport.html).)
 
 ## Run it locally
 
