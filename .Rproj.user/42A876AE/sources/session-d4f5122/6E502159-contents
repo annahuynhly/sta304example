@@ -1,0 +1,184 @@
+---
+title: "STA304 Interactive Website Instructions"
+affiliation: "University of Toronto"
+format:
+  pdf:
+    documentclass: article
+    geometry: "margin=1in"
+    titlepage: true
+    titlepage-color: "FFFFFF"
+    titlepage-text-color: "000000"
+    titlepage-rule-height: 2
+header-includes:
+  - \usepackage{fvextra}
+  - \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,commandchars=\\\{\}}
+  - \DefineVerbatimEnvironment{OutputCode}{Verbatim}{breaklines,commandchars=\\\{\}}
+---
+
+Due Date: December XX 2026
+
+Instead of writing a generic, static, classical report, your group will present the results of
+your survey as an **interactive R Shiny website**. The reader should be able to explore your data
+themselves, change what is plotted, adjust how it looks, filter to the subgroup they care
+about, etc.
+
+The goal for this checkpoint is for you to:
+
+1.  Turn the analysis from the exploratory data analysis checkpoint into an interactive web app.
+
+2.  Let the user control the plots (which variables, colours, axis limits, and so on).
+
+3.  Let the user filter the data by demographic variables.
+
+4.  Provide interpretations of the results so a non-statistician can understand them.
+
+5.  Deploy the app publicly so anyone with the link can use it.
+
+# 1. What is R Shiny?
+
+[R Shiny](https://shiny.posit.co/) is an `R` package for building interactive web applications
+directly from `R`. No HTML, CSS, or JavaScript knowledge required, although it would provide 
+the user with more flexibility. 
+
+A `Shiny app` has two parts that talk to each other:
+
+-   The **UI** (user interface) describes *what the user sees*: the layout, the input widgets
+    (sliders, drop-downs, colour pickers), and where the outputs (plots, tables, text) go.
+
+-   The **server** describes *what the app does*: it takes the current values of the inputs,
+    runs your `R` code (e.g., subsets the data and draws a plot), and sends the result back to the
+    UI. Whenever an input changes, the relevant output is automatically recomputed. This is called
+    **reactivity** and it is the core idea of Shiny.
+
+The smallest possible app looks like this. A single file called `app.R` is the easiest way to
+start:
+
+```{r}
+#| eval: false
+library(shiny)
+
+ui <- fluidPage(
+  titlePanel("My First App"),
+  sliderInput("bins", "Number of bins:", min = 1, max = 30, value = 10),
+  plotOutput("hist")
+)
+
+server <- function(input, output) {
+  output$hist <- renderPlot({
+    hist(faithful$waiting, breaks = input$bins)   # input$bins updates live
+  })
+}
+
+shinyApp(ui, server)
+```
+
+Run it locally by opening `app.R` in RStudio and clicking **Run App**.
+
+Some additional documentation for `R Shiny` is can be found [here](https://shiny.posit.co/r/getstarted/shiny-basics/lesson1/).
+
+# 2. What You Need to Create
+
+Build a Shiny app, using **your group's own cleaned survey data**, that lets a visitor explore
+your results interactively. This course does not have a programming emphasis, 
+so the app does **not** need to be fancy. We want a working app with a handful of thoughtful 
+controls.
+
+Your app **must** include, at minimum:
+
+-   **At least two interactive plots** that update based on user input. At least one input should
+    change *what* is plotted (e.g., a drop-down to pick which variable to show).
+
+-   **A demographic filter.** The user can restrict the data to a subgroup. For example, only
+    domestic students, only a particular gender, or a range of ages, and every plot/table
+    updates accordingly.
+
+-   **Written interpretations** of the results for your key variables, so that someone with no
+    statistics background can understand what the plot is telling them.
+
+Beyond the minimum, here are **suggestions**: pick the ones that make sense for your project,
+and feel free to add your own:
+
+1.  **Adjustable plot scales and limits.** Let the user set the x-limits and y-limits, or toggle a
+    log scale, using sliders or numeric inputs.
+
+2.  **Adjustable colours.** Let the user recolour the plot (a colour picker, or a drop-down of
+    palettes). This is a nice touch for accessibility, such as a colour-blind-friendly palette.
+
+3.  **Choose which graphs to display.** Use tabs or a drop-down so the user picks which
+    graph/analysis they want to see, rather than scrolling past all of them.
+
+4.  **Show the underlying summary statistics or statistical test** (e.g., the output of a t-test or
+    a fitted model) that updates with the current filter, alongside a plain-language interpretation.
+
+5.  **A data table** of the (filtered) responses that the user can sort and search.
+
+6.  **A short "About" tab** describing the survey, the sample, and any caveats (e.g., that the
+    sample is not truly random).
+
+We are hosting apps on [**Posit Connect Cloud**](https://connect.posit.cloud), which deploys
+directly from a public GitHub repository for free. Once deployed, you will receive a public URL
+that anyone can open in a browser, and this needs to be submitted.
+(There are likely additional instructions that you'll need, like a `manifest.json`, 
+but details are on the website.)
+
+1.  Go to [**Posit Connect Cloud**](https://connect.posit.cloud) and sign in with the 
+same **GitHub** account that has access to the STA304 project.
+
+2.  Click **Publish** and choose **Shiny** as the content type.
+
+3.  Select your **repository**, the **branch** (usually `main`), and the **primary file**
+    (`app.R`).
+
+4.  Click **Publish**. Connect Cloud will install your packages and build the app. This can take a few minutes. Watch the build log for errors (a missing package or a bad file path is the usual culprit).
+
+5.  When it finishes, open the app from the public URL and click through every control to confirm it works from a fresh browser (not just on your own machine).
+
+Paste the public Posit Connect Cloud URL onto the `README.md` of the GitHub repository, 
+and make sure the app source code is committed there as well.
+
+Confirm the link opens in a private/incognito window. If it only works while *you* are logged
+in, the TA cannot mark it.
+
+# 3. Rubric
+
+This checkpoint is worth **7%** of the final grade, so the rubric below totals **7 marks**
+(1 mark = 1%).
+
+### **Deployment & Accessibility ( /1)**
+
+-   The app is deployed on Posit Connect Cloud and the public URL loads and runs without errors in
+    a fresh browser. ( /0.5)
+
+-   The URL is submitted correctly and the app source code is committed to
+    the repository. ( /0.25)
+
+-   The app uses the group's own cleaned survey data. ( /0.25)
+
+### **Interactive Plots ( /2.5)**
+
+-   At least two plots that update based on user input, at least one of which changes *what* is
+    plotted. ( /1)
+
+-   The user can adjust plot scales and/or axis limits (x and/or y). ( /0.75)
+
+-   The user can change plot colours. ( /0.75)
+
+### **Filtering & Display Controls ( /1.5)**
+
+-   The user can filter the results by at least one demographic variable, and outputs update
+    accordingly. ( /0.75)
+
+-   The user can choose which graph(s)/output to display (e.g., via tabs or a drop-down). ( /0.75)
+
+### **Interpretation of Results ( /1)**
+
+-   Interpretations (written and/or reactive) accompany the outputs for the key variables and are
+    understandable to a non-statistician. ( /0.6)
+
+-   Axes, legends, and interpretations use readable variable names, not code book names. ( /0.4)
+
+### **Organization & Usability ( /1)**
+
+-   The app is logically organized (e.g., sidebar/tabs) and easy to navigate. ( /0.5)
+
+-   Plots are properly labelled (titles, axes, legends) and the overall app is polished. ( /0.5)
